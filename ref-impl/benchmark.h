@@ -16,7 +16,7 @@ __attribute__((always_inline))
 inline std::enable_if_t<sizeof(T) <= MAX_GPR_SIZE>
 keep(T&& x)
 {
-    asm volatile("" : : "r" (x) : );
+    asm volatile("" : : "g" (x) : );
 }
 
 template<typename T>
