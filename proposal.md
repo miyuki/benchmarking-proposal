@@ -1,8 +1,11 @@
 # Benchmarking primitives
 
 Document number: DxxxxR0
+
 Date: 2016-07-05
+
 Reply-To: Mikhail Maltsev [maltsevm@gmail.com](maltsevm@gmail.com)
+
 Audience: LEWG
 
 ## The problem
@@ -16,7 +19,7 @@ measurement:
 * Should not be affected by compiler optimizations based on the fact, that input
   data is known in advance
 
-For example let's consider the following code:
+For example, consider the following code:
 
 ```C++
 #include <chrono>
@@ -50,10 +53,13 @@ to add timing barriers was rejected at Oulu meeting.
 
 > Chandler: If the timing fence is inside now, and now is in another TU, how does
 > the compiler know there is a fence?
+>
 > ...
+>
 > Chandler: I was sympathetic to start, but I don't think I can implement this.
 > The only way I can implement this is to undo as-if. I have to make sure
 > everything can not move across the fence.
+>
 > Hal: I agree -- I don't think we can implement.
 
 Chandler also mentioned his [talk](https://www.youtube.com/watch?v=nXaxk27zwlk)
@@ -105,7 +111,7 @@ device. The actual value of the argument remains unchanged, but the
 implementation is not allowed to rely on that when performing optimization. If
 T is const-qualified, the program is ill-formed.
 
-Note: implementations are encouraged to leverage the as-if principle and not to
+Note: implementations are encouraged to leverage the as-if principle and not
 perform any real I/O.
 
 ## Naming
@@ -150,3 +156,5 @@ void benchmark()
               << " ms";
 }
 ```
+
+This avoids the mentioned problems with constant folding and code motion.
