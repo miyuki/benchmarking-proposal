@@ -4,7 +4,7 @@ Document number: DxxxxR0
 
 Date: 2016-07-05
 
-Reply-To: Mikhail Maltsev [maltsevm@gmail.com](maltsevm@gmail.com)
+Reply-To: Mikhail Maltsev <maltsevm@gmail.com>
 
 Audience: LEWG
 
@@ -82,7 +82,7 @@ IMHO, standardizing these functions (especially `clobber`) is problematic
 because the semantics of a "memory" clobber in the clobber list of an inline asm
 is implementation-specific.
 
-## Proposal
+## The proposal
 
 This proposal adds a new header `<benchmark>`, which defines the following
 function templates:
