@@ -1,6 +1,6 @@
 # Benchmarking primitives
 
-Document number: DxxxxR0
+Document number: D0412R0
 
 Date: 2016-07-05
 
@@ -149,7 +149,7 @@ void benchmark()
     int value = 42;
     experimental::benchmark::touch(value);
     double answer = perform_computation(value);
-    experimental::benchmark::keep(anwer);
+    experimental::benchmark::keep(answer);
     auto delta = chrono::high_resolution_clock::now() - start;
     std::cout << "Answer: " << answer << ". Computation took "
               << chrono::duration_cast<chrono::milliseconds>(delta).count()
