@@ -48,8 +48,7 @@ It would be nice to have a portable way to disable such optimizations.
 
 ## 2. Design space
 
-Proposal [P0342R0](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html)
-to add timing barriers was rejected at Oulu meeting.
+Proposal P0342R0 [1](#ref1) to add timing barriers was rejected at Oulu meeting.
 
 > Chandler: If the timing fence is inside now, and now is in another TU, how does
 > the compiler know there is a fence?
@@ -62,9 +61,9 @@ to add timing barriers was rejected at Oulu meeting.
 >
 > Hal: I agree -- I don't think we can implement.
 
-Chandler also mentioned his [talk](https://www.youtube.com/watch?v=nXaxk27zwlk)
-at CppCon 2015. This talk describes two primitives that can be used for
-benchmarking (using GCC extended asm syntax):
+Chandler also mentioned his talk [2](#ref2) at CppCon 2015. This talk describes
+two primitives that can be used for benchmarking (using GCC extended asm
+syntax):
 
 ```C++
 static void escape(void *p)
@@ -117,10 +116,8 @@ perform any real I/O.
 ## 4. Naming
 
 Alternative names for the `keep` function:
-* `do_not_optimize` - used in [Google benchmark](https://github.com/google/benchmark)
-library
-* `do_not_optimize_away` - used in [Celero](https://github.com/DigitalInBlue/Celero)
-library
+* `do_not_optimize` - used in Google benchmark [3](ref3) library
+* `do_not_optimize_away` - used in Celero [4](ref4) library
 * `escape`
 
 Alternative names for the `touch` function:
@@ -158,3 +155,13 @@ void benchmark()
 ```
 
 This avoids the mentioned problems with constant folding and code motion.
+
+## 6. References
+
+1. <a name="ref1"></a> Mike Spertus, Timing barriers,
+http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html
+2. <a name="ref2"></a> Chandler Carruth, Tuning C++: Benchmarks, and CPUs, and
+Compilers! Oh My! https://www.youtube.com/watch?v=nXaxk27zwlk
+3. <a name="ref3"></a> Google benchmark library,
+https://github.com/google/benchmark
+4. <a name="ref4"></a> Celero library, https://github.com/DigitalInBlue/Celero
