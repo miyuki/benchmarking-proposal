@@ -8,7 +8,7 @@ Reply-To: Mikhail Maltsev <maltsevm@gmail.com>
 
 Audience: LEWG
 
-## The problem
+## 1. The problem
 
 When optimizing program performance, it is often desirable to be able to measure
 performance of an isolated piece of code on some predefined input. Ideally such
@@ -46,7 +46,7 @@ call to `now` or after the second one.
 
 It would be nice to have a portable way to disable such optimizations.
 
-## Design space
+## 2. Design space
 
 Proposal [P0342R0](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html)
 to add timing barriers was rejected at Oulu meeting.
@@ -82,7 +82,7 @@ IMHO, standardizing these functions (especially `clobber`) is problematic
 because the semantics of a "memory" clobber in the clobber list of an inline asm
 is implementation-specific.
 
-## The proposal
+## 3. The proposal
 
 This proposal adds a new header `<benchmark>`, which defines the following
 function templates:
@@ -114,7 +114,7 @@ T is const-qualified, the program is ill-formed.
 Note: implementations are encouraged to leverage the as-if principle and not
 perform any real I/O.
 
-## Naming
+## 4. Naming
 
 Alternative names for the `keep` function:
 * `do_not_optimize` - used in [Google benchmark](https://github.com/google/benchmark)
@@ -131,7 +131,7 @@ Alternative names for the header and the namespace:
 * benchmark
 * benchmarking
 
-## Example
+## 5. Example
 
 The code shown above could be rewritten as:
 
