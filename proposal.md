@@ -16,7 +16,7 @@ measurement:
 
 * Should not be affected by I/O timing
 * Should be done on optimized code
-* Should not be affected by compiler optimizations based on the fact, that input
+* Should not be affected by compiler optimizations based on the fact that input
   data is known in advance
 
 For example, consider the following code:
@@ -40,7 +40,7 @@ void benchmark()
 ```
 
 Suppose that `perform_computation` does not have any observable side effect. In
-this case, the compiler can perform constant-folding, i.e. compute the value
+this case, the compiler can perform constant-folding, i.e., compute the value
 of `answer` at compile time. It can also move computation before the first
 call to `now` or after the second one.
 
@@ -102,11 +102,11 @@ void touch(T &);
 ```
 
 The implementation shall treat a call to `keep` as-if `keep` outputs each
-byte of it's argument's object representation into an unspecified output
+byte of its argument's object representation into an unspecified output
 device.
 
-The implementation shall treat a call to `touch` as-if, `touch` reads
-each byte of it's argument's object represenation from an unspecified input
+The implementation shall treat a call to `touch` as-if `touch` reads
+each byte of its argument's object represenation from an unspecified input
 device. The actual value of the argument remains unchanged, but the
 implementation is not allowed to rely on that when performing optimization. If
 T is const-qualified, the program is ill-formed.
