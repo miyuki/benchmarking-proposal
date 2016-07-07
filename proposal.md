@@ -48,7 +48,7 @@ It would be nice to have a portable way to disable such optimizations.
 
 ## 2. Design space
 
-Proposal P0342R0 [1](#ref1) to add timing barriers was rejected at Oulu meeting.
+Proposal P0342R0 [[1](#ref1)] to add timing barriers was rejected at Oulu meeting.
 
 > Chandler: If the timing fence is inside now, and now is in another TU, how does
 > the compiler know there is a fence?
@@ -61,7 +61,7 @@ Proposal P0342R0 [1](#ref1) to add timing barriers was rejected at Oulu meeting.
 >
 > Hal: I agree -- I don't think we can implement.
 
-Chandler also mentioned his talk [2](#ref2) at CppCon 2015. This talk describes
+Chandler also mentioned his talk [[2](#ref2)] at CppCon 2015. This talk describes
 two primitives that can be used for benchmarking (using GCC extended asm
 syntax):
 
@@ -116,8 +116,8 @@ perform any real I/O.
 ## 4. Naming
 
 Alternative names for the `keep` function:
-* `do_not_optimize` - used in Google benchmark [3](ref3) library
-* `do_not_optimize_away` - used in Celero [4](ref4) library
+* `do_not_optimize` - used in Google benchmark [[3](ref3)] library
+* `do_not_optimize_away` - used in Celero [[4](ref4)] library
 * `escape`
 
 Alternative names for the `touch` function:
