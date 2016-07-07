@@ -14,7 +14,7 @@ namespace benchmark {
 template<typename T>
 __attribute__((always_inline))
 inline std::enable_if_t<sizeof(T) <= MAX_GPR_SIZE>
-keep(T&& x)
+keep(T&& x) noexcept
 {
     asm volatile("" : : "g" (x) : );
 }
@@ -22,7 +22,7 @@ keep(T&& x)
 template<typename T>
 __attribute__((always_inline))
 inline std::enable_if_t<(sizeof(T) > MAX_GPR_SIZE)>
-keep(T&& x)
+keep(T&& x) noexcept
 {
     asm volatile("" : : "m" (x) : );
 }
@@ -30,7 +30,7 @@ keep(T&& x)
 template<typename T>
 __attribute__((always_inline))
 inline std::enable_if_t<sizeof(T) <= MAX_GPR_SIZE>
-touch(T& x)
+touch(T& x) noexcept
 {
     static_assert(!std::is_const<T>(), "touch argument is writeable");
     asm volatile("" : "+r" (x) : : );
@@ -39,7 +39,7 @@ touch(T& x)
 template<typename T>
 __attribute__((always_inline))
 inline std::enable_if_t<(sizeof(T) > MAX_GPR_SIZE)>
-touch(T& x)
+touch(T& x) noexcept
 {
     static_assert(!std::is_const<T>(), "touch argument is writeable");
     asm volatile("" : "+m" (x) : : );

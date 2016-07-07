@@ -93,10 +93,10 @@ namespace experimental {
 namespace benchmark {
 
 template<class T>
-void keep(T &&);
+void keep(T &&) noexcept;
 
 template<class T>
-void touch(T &);
+void touch(T &) noexcept;
 
 } } }
 ```
