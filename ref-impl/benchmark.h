@@ -18,11 +18,12 @@ template<typename T>
 inline void touch(T& x) noexcept
 {
     volatile char dest;
+    char buf[sizeof(T)];
     for (std::size_t pos = 0; pos < sizeof(T); ++pos) {
         dest = reinterpret_cast<const char *>(std::addressof(x))[pos];
-        reinterpret_cast<char *>(std::addressof(x))[pos] = dest;
+        buf[pos] = dest;
     }
-    (void)dest;
+    std::memcpy(&x, buf, sizeof(T));
 }
 
 }
