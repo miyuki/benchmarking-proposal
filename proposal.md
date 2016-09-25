@@ -156,7 +156,11 @@ void benchmark()
 
 This avoids the mentioned problems with constant folding and code motion.
 
-## 6. References
+## 6. Acknowledgements
+
+Thanks to Web Brown for useful feedback.
+
+## 7. References
 
 1. <a name="ref1"></a> Mike Spertus, Timing barriers,
 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html
