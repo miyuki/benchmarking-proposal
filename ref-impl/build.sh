@@ -1,5 +1,5 @@
 #!/bin/bash -e
-GCC_PATH=/opt/gcc-5.2.0/bin
+GCC_PATH=/opt/gcc-5.3.0/bin
 CLANG_PATH=/usr/bin
 
 cd "$(dirname "$0")"

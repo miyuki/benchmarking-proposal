@@ -1,0 +1,222 @@
+<html><head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Benchmarking primitives</title>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="607">
+    <tr>
+      <td width="172" align="left" valign="top">Document number:</td>
+      <td width="435"><span style="background-color:#FFFF00">D04012R0</span></td>
+    </tr>
+    <tr>
+      <td width="172" align="left" valign="top">Date:</td>
+      <td width="435">2016-07-05</td>
+    </tr>
+    <tr>
+      <td width="172" align="left" valign="top">Project:</td>
+      <td width="435">EWG, LEWG</td>
+    </tr>
+    <tr>
+      <td width="172" align="left" valign="top">Reply-to:</td>
+      <td width="435">Mikhail Maltsev
+          &lt;<a href="mailto:maltsevm@gmail.com">maltsevm@gmail.com</a>&gt;</td>
+    </tr>
+  </table>
+
+
+<h1>Benchmarking primitives</h1>
+
+<p><ol>
+  <li><a href="#problem">The problem</a></li>
+  <li><a href="#design-space">Design space</a></li>
+  <li><a href="#proposal">The proposal</a></li>
+  <li><a href="#naming">Naming</a></li>
+  <li><a href="#example">Example</a></li>
+  <li><a href="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#references">References</a></li>
+</ol></p>
+
+<h2><a name="problem">1. The problem</a></h2>
+
+<p>When optimizing program performance, it is often desirable to be able to measure
+performance of an isolated piece of code on some predefined input. Ideally such
+measurement:</p>
+
+<p><ul>
+  <li>Should not be affected by I/O timing</li>
+  <li>Should be done on optimized code</li>
+  <li>Should not be affected by compiler optimizations based on the fact that input
+      data is known in advance</li>
+</ul></p>
+
+<p>For example, consider the following code:</p>
+
+<pre>
+#include &lt;chrono&gt;
+#include &lt;iostream&gt;
+
+double perform_computation(int);
+
+void benchmark()
+{
+    using namespace std;
+    auto start = chrono::high_resolution_clock::now();
+    double answer = perform_computation(42);
+    auto delta = chrono::high_resolution_clock::now() - start;
+    std::cout &lt;&lt; "Answer: " &lt;&lt; answer &lt;&lt; ". Computation took "
+              &lt;&lt; chrono::duration_cast<chrono::milliseconds>(delta).count()
+              &lt;&lt; " ms";
+}
+</pre>
+
+<p>Suppose that <tt>perform_computation</tt> does not have any observable side effect. In
+this case, the compiler can perform constant-folding, i.e., compute the value
+of <tt>answer</tt> at compile time. It can also move computation before the first
+call to <tt>now</tt> or after the second one.</p>
+
+<p>It would be nice to have a portable way to disable such optimizations.</p>
+
+<h2><a name="design-space">2. Design space</a></h2>
+
+Proposal P0342R0 [<a href="#ref1">1</a>] to add timing barriers was rejected at Oulu meeting.
+
+<blockquote>
+<p>Chandler: If the timing fence is inside now, and now is in another TU, how does
+the compiler know there is a fence?</p>
+<p>...</p>
+<p>Chandler: I was sympathetic to start, but I don't think I can implement this.
+The only way I can implement this is to undo as-if. I have to make sure
+everything can not move across the fence.</p>
+
+<p>Hal: I agree &mdash; I don't think we can implement</p>
+</blockquote>
+
+Chandler also mentioned his talk [<a href="#ref2">2</a>] at CppCon 2015. This talk describes
+two primitives that can be used for benchmarking (using GCC extended asm
+syntax):
+
+<pre>
+static void escape(void* p)
+{
+    asm volatile("" : : "g"(p) : "memory");
+}
+
+static void clobber()
+{
+    asm volatile("" : : : "memory");
+}
+</pre>
+
+<p>IMHO, standardizing these functions (especially <tt>clobber</tt>) is problematic
+because the semantics of a "memory" clobber in the clobber list of an inline asm
+is implementation-specific.</p>
+
+<h2><a name="proposal">3. The proposal</a></h2>
+
+This proposal adds a new header <tt>&lt;benchmark&gt;</tt>, which defines the following
+function templates:
+
+<pre>
+namespace std {
+namespace experimental {
+namespace benchmark {
+
+template&lt;class T&gt;
+void keep(T &amp;&amp;) noexcept;
+
+template&lt;class T&gt;
+void touch(T &amp;) noexcept;
+
+} } }
+</pre>
+
+<p>The implementation shall treat a call to <tt>keep</tt> as-if <tt>keep</tt> outputs each
+byte of its argument's object representation into an unspecified output
+device.</p>
+
+<p>The implementation shall treat a call to <tt>touch</tt> as-if <tt>touch</tt> reads
+each byte of its argument's object represenation from an unspecified input
+device. The actual value of the argument remains unchanged, but the
+implementation is not allowed to rely on that when performing optimization. If
+T is const-qualified, the program is ill-formed.</p>
+
+<p>Note: implementations are encouraged to leverage the as-if principle and not
+perform any real I/O.</p>
+
+<h2><a name="naming">4. Naming</a></h2>
+
+<p>Alternative names for the <tt>keep</tt> function:</p>
+<p><ul>
+  <li><tt>do_not_optimize</tt> &mdash; used in Google benchmark [<a href="#ref3">3</a>] library</li>
+  <li><tt>do_not_optimize_away</tt> &mdash; used in Celero [<a href="#ref4">4</a>] library</li>
+  <li><tt>escape</tt></li>
+</ul></p>
+
+<p>Alternative names for the <tt>touch</tt> function:</p>
+<p><ul>
+  <li><tt>clobber</tt></li>
+</ul></p>
+
+<p>Alternative names for the header and the namespace:</p>
+<p><ul>
+  <li><tt>bench</tt></li>
+  <li><tt>benchmark</tt></li>
+  <li><tt>benchmarking</tt></li>
+</ul></p>
+
+<h2><a name="example">5. Example</a></h2>
+
+<p>The code shown above could be rewritten as:</p>
+
+<pre>
+#include &lt;chrono&gt;
+#include &lt;iostream&gt;
+#include &lt;benchmark&gt;
+
+double perform_computation(int);
+
+void benchmark()
+{
+    using namespace std;
+    auto start = chrono::high_resolution_clock::now();
+    int value = 42;
+    experimental::benchmark::touch(value);
+    double answer = perform_computation(value);
+    experimental::benchmark::keep(answer);
+    auto delta = chrono::high_resolution_clock::now() - start;
+    std::cout &lt;&lt; "Answer: " &lt;&lt; answer &lt;&lt; ". Computation took "
+              &lt;&lt; chrono::duration_cast&lt;chrono::milliseconds&gt;(delta).count()
+              &lt;&lt; " ms";
+}
+</pre>
+
+<p>This avoids the mentioned problems with constant folding and code motion.</p>
+
+<h2><a name="acknowledgements">6. Acknowledgements</a></h2>
+
+Thanks to Web Brown for useful feedback.
+
+<h2><a name="references">7. References</a></h2>
+
+<ol>
+  <li>
+    <a name="ref1"></a> Mike Spertus, Timing barriers,
+    <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html">http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0342r0.html</a>
+  </li>
+  <li>
+    <a name="ref2"></a> Chandler Carruth, Tuning C++: Benchmarks, and CPUs, and Compilers! Oh My!
+    <a href="https://www.youtube.com/watch?v=nXaxk27zwlk">https://www.youtube.com/watch?v=nXaxk27zwlk</a>
+  </li>
+  <li>
+    <a name="ref3"></a> Google benchmark library,
+    <a href="https://github.com/google/benchmark">https://github.com/google/benchmark</a>
+  </li>
+  <li>
+    <a name="ref4"></a> Celero library,
+    <a href="https://github.com/DigitalInBlue/Celero">https://github.com/DigitalInBlue/Celero</a>
+  </li>
+</ol>
+
+</body></html>
